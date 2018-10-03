@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Github</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<div class="container">
+  <h2>Github Repository Searcher</h2>
+  <p>Insert the GitHub username to visualize its repositories:</p>
+  <form>
+    <div class="form-group">
+      <label for="usr">Github username:</label>
+      <input type="text" class="form-control" id="usr">
+      <button type="button" onclick="displayResult()">Submit</button>
+    </div>
+  <h3> User Name: </h3>  <p id= "username"> <p>
+  <h3> Followers: </h3>  <p id= "numfollowers"> <p>
+  <h3> Profile picture: </h3>   <img id="phot0" src="" class="img-circle" alt="Profile" style="width:10%"> 
+ 
+
+
+  </form>
+  <h2>Repositories:</h2>
+   <table class="table">
+    <thead>
+      <tr>
+        
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        
+        
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+	function displayResult() {
+		var username= document.getElementById('usr').value;
+		$.ajax({
+			type: 'GET',
+			url: 'https://api.github.com/users/'+username,
+			data: {get_param: 'value'},
+			dataType: 'json',
+			success: function(data){
+				document.getElementById('username').innerHTML = username;
+				var followers=data.followers;
+				console.log(followers);
+				document.getElementById('numfollowers').innerHTML = followers;
+				
+				document.getElementById('phot0').src = data.avatar_url;
+
+			}
+
+		});
+
+		$.ajax({
+			type: 'GET',
+			url: 'https://api.github.com/users/'+username+'/repos',
+			data: {get_param: 'value'},
+			dataType: 'json',
+			success: function(datarepos){
+				 $("thead").html(`
+            		<tr>
+              		<th>Name</th>
+              		<th>ID</th>
+              		<th>Description</th>
+              		<th>Url to the repository</th>
+              		</tr>
+            	`);
+				 var name;
+				 var id;
+				 var descrip;
+				 $('tbody').html('');
+				 for(let i=0; i<datarepos.length;i++)
+				 {
+				 	name=datarepos[i].name;
+				 	id=datarepos[i].id;
+				 	descrip=datarepos[i].description;
+				 	$('tbody').append(`
+				 		<tr>
+                  		<td>${datarepos[i].name}</td>
+                  		<td>${datarepos[i].id}</td>
+                  		<td>${datarepos[i].description}</td>
+                  		<td><a target="_blank" href="${datarepos[i].html_url}">Link</a></td>
+                		</tr>
+				 		`)
+			
+				 }
+				 	
+
+			}
+
+		});
+	};
+
+
+
+
+</script>
